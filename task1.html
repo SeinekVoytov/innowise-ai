@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Expense Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+    }
+    table {
+      margin-top: 10px;
+      width: 100%;
+    }
+    .results {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Monthly Expense Calculator</h1>
+
+  <!-- Form to add expenses -->
+  <label for="category">Category:</label>
+  <select id="category">
+    <option value="Groceries">Groceries</option>
+    <option value="Rent">Rent</option>
+    <option value="Transportation">Transportation</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Communication">Communication</option>
+    <option value="Gym">Gym</option>
+  </select>
+
+  <label for="amount">Amount ($):</label>
+  <input type="number" id="amount" placeholder="Enter amount">
+
+  <button onclick="addExpense()">Add Expense</button>
+  <button onclick="calculateExpenses()">Calculate</button>
+
+  <!-- Table to display added expenses -->
+  <table id="expensesTable">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Amount ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <!-- Results -->
+  <div class="results">
+    <p id="total"></p>
+    <p id="average"></p>
+    <p id="top"></p>
+  </div>
+
+  <script>
+    const expenses = []; // Stores all added expenses
+
+    // Adds a new expense to the list and updates the table
+    function addExpense() {
+      const category = document.getElementById("category").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      if (!category || isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid category and amount.");
+        return;
+      }
+
+      expenses.push({ category, amount });
+      updateTable();
+      document.getElementById("amount").value = ""; // Clear input
+    }
+
+    // Updates the table with current expenses
+    function updateTable() {
+      const tableBody = document.querySelector("#expensesTable tbody");
+      tableBody.innerHTML = "";
+
+      expenses.forEach(exp => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${exp.category}</td><td>${exp.amount.toLocaleString()}</td>`;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Calculates total, average and top 3 expenses
+    function calculateExpenses() {
+      if (expenses.length === 0) {
+        alert("No expenses to calculate.");
+        return;
+      }
+
+      const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const average = total / 30; // Assuming 30 days in a month
+
+      // Sort expenses in descending order to find top 3
+      const topExpenses = [...expenses]
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 3);
+
+      // Display results
+      document.getElementById("total").textContent = `Total Expenses: $${total.toLocaleString()}`;
+      document.getElementById("average").textContent = `Average Daily Expense: $${average.toFixed(2)}`;
+      document.getElementById("top").textContent = `Top 3 Expenses: ${topExpenses.map(e => `${e.category} ($${e.amount.toLocaleString()})`).join(", ")}`;
+    }
+  </script>
+</body>
+</html>
